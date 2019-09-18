@@ -1,7 +1,17 @@
 {
   "name": "passport-express-4.x-azure-ad",
-  "version": "0.0.0",
-  "description": "Express 4.x app using Passport for authentication with Azure AD.",
+  "version": "0.0.1",
+  "description": "Microsoft graph using express 4.x app with Passport for authentication to Azure AD.",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./lib/server.js",
+    "test:unit": "jest  --runInBand",
+    "test": "npm run lint && npm run test:unit",
+    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon --inspect ./lib/app.js\"",
+    "lint": "tslint -q -p . -c tslint.json",
+    "lint:fix": "tslint --fix -p . -c tslint.json",
+    "debug": "nodemon --inspect ./lib/app.js | bunyan"
+  },
   "keywords": [
     "example",
     "express",
@@ -36,12 +46,13 @@
     "simple-oauth2": "^2.4.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.1",
     "@types/node": "^12.7.5",
     "@types/node-fetch": "^2.5.1",
     "@types/passport": "^1.0.1",
     "@types/passport-azure-ad": "^4.0.3",
-    "ts-lint": "^4.5.1",
+    "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   }
 }
