@@ -1,30 +1,20 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// Express with passport-azure-ad
 import * as express from 'express';
 import * as passport from 'passport';
 import * as azure_ad from 'passport-azure-ad';
-import fetch from 'node-fetch';
-import * as simple_oauth2 from 'simple-oauth2';
+import * as connect_ensure_login from 'connect-ensure-login';
+const ensureLoggedIn = connect_ensure_login.ensureLoggedIn();
 
-// tslint:disable-next-line: no-var-requires
-require('dotenv').config();
+// Enable Microsoft Graph calls
+import fetch from 'node-fetch';
+import * as simple_oauth2 from 'simple-oauth2'; // for token refresh management
 
 const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
 const redirectPath = 'auth/openid/return';
 const port = process.env.PORT || '3000';
-
-const oauth = simple_oauth2.create({
-  client: {
-    id: process.env.APP_ID,
-    secret: process.env.APP_SECRET,
-  },
-  auth: {
-    tokenHost: 'https://login.microsoftonline.com/common',
-    authorizePath: '/oauth2/v2.0/authorize',
-    tokenPath: '/oauth2/v2.0/token',
-  },
-});
 
 const azureStrategyOptions: azure_ad.IOIDCStrategyOptionWithRequest = {
   identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
@@ -100,6 +90,18 @@ passport.deserializeUser(async (obj: any, cb) => {
   cb(null, { ...obj, oauthToken: managedAccessToken.token });
 });
 
+const oauth = simple_oauth2.create({
+  client: {
+    id: process.env.APP_ID,
+    secret: process.env.APP_SECRET,
+  },
+  auth: {
+    tokenHost: 'https://login.microsoftonline.com/common',
+    authorizePath: '/oauth2/v2.0/authorize',
+    tokenPath: '/oauth2/v2.0/token',
+  },
+});
+
 // Create a new Express application.
 const app = express();
 
@@ -154,7 +156,7 @@ app.get('/logout', (req, res, next) => {
   });
 
 app.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn(),
+  ensureLoggedIn,
   async (req, res, next) => {
     const response = await fetch('https://graph.microsoft.com/v1.0/me', { headers: { Authorization: `Bearer ${req.user.oauthToken.access_token}` } });
     if (!response.ok) { return next(response.statusText); }
