@@ -1,30 +1,45 @@
 {
-  "name": "express-4.x-local-example",
+  "name": "passport-express-4.x-azure-ad",
   "version": "0.0.0",
-  "description": "Express 4.x app using Passport for authentication with username and password.",
+  "description": "Express 4.x app using Passport for authentication with Azure AD.",
   "keywords": [
     "example",
     "express",
-    "passport"
+    "passport",
+    "passport-azure-ad",
+    "azure",
+    "azure-ad"
   ],
-  "author": "Jared Hanson",
-  "license": "Unlicense",
-  "homepage": "https://github.com/passport/express-4.x-local-example",
+  "author": "John Shewchuk",
+  "license": "MIT",
+  "homepage": "https://github.com/johnshew/passport-express-4.x-azure-ad",
   "repository": {
     "type": "git",
-    "url": "git://github.com/passport/express-4.x-local-example.git"
+    "url": "git://github.com/johnshew/passport-express-4.x-azure-ad.git"
   },
   "bugs": {
-    "url": "https://github.com/passport/express-4.x-local-example/issues"
+    "url": "https://github.com/johnshew/passport-express-4.x-azure-ad/issues"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "connect-ensure-login": "^0.1.1",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.1.0",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "express-session": "^1.16.1",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0"
+    "passport-azure-ad": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/node": "^12.7.5",
+    "@types/node-fetch": "^2.5.1",
+    "@types/passport": "^1.0.1",
+    "@types/passport-azure-ad": "^4.0.3",
+    "ts-lint": "^4.5.1",
+    "typescript": "^3.6.3"
   }
 }
