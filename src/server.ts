@@ -4,6 +4,8 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as azure_ad from 'passport-azure-ad';
 import fetch from 'node-fetch';
+import * as simple_oauth2 from 'simple-oauth2';
+import { O_TRUNC } from 'constants';
 
 // tslint:disable-next-line: no-var-requires
 require('dotenv').config();
@@ -11,6 +13,18 @@ require('dotenv').config();
 const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
 const redirectPath = 'auth/openid/return';
 const port = process.env.PORT || '3000';
+
+const oauth = simple_oauth2.create({
+  client: {
+    id: process.env.APP_ID,
+    secret: process.env.APP_SECRET,
+  },
+  auth: {
+    tokenHost: 'https://login.microsoftonline.com/common',
+    authorizePath: '/oauth2/v2.0/authorize', 
+    tokenPath: '/oauth2/v2.0/token', 
+  }
+});
 
 const azureStrategyOptions: azure_ad.IOIDCStrategyOptionWithRequest = {
   identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
@@ -41,14 +55,14 @@ async function processAzureStrategy(
   jwtClaims: any,
   access_token: string,
   refresh_token: string,
-  oauthToken: any,
+  params: any,
   done: azure_ad.VerifyCallback) {
 
   if (!profile.oid) {
     return done(new Error('No oid found'), null);
   }
   process.nextTick(async () => {
-    return done(null, { ...profile, oauthToken }); // Done and include OauthToken in the profile.
+    return done(null, { ...profile, oauthToken: params }); // Done and include OauthToken in the profile.
   });
 }
 
@@ -58,7 +72,7 @@ declare global {
     interface User {
       oauthToken: any;
       [key: string]: any;
-      
+
     }
   }
 }
@@ -76,13 +90,13 @@ passport.use(new azure_ad.OIDCStrategy(azureStrategyOptions, processAzureStrateg
 // and deserialized.
 
 passport.serializeUser(function (user, cb) {
-  console.log(user)
   cb(null, user);
 });
 
-passport.deserializeUser(function (obj, cb) {
-  console.log(obj);
-  cb(null, obj);
+passport.deserializeUser(async function (obj: any, cb) {
+  let managedAccessToken = oauth.accessToken.create(obj.oauthToken);
+  if (managedAccessToken.expired()) managedAccessToken = await managedAccessToken.refresh(); // could do this check when you are doing calls but this should help keep it up to date in the session state when serialized
+  cb(null, {... obj, oauthToken: managedAccessToken.token});
 });
 
 // Create a new Express application.
@@ -147,4 +161,4 @@ app.get('/profile',
     return next();
   });
 
-app.listen(process.env['PORT'] || 3000);
+app.listen(port);
