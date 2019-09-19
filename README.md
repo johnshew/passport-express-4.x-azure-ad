@@ -1,11 +1,11 @@
 This example demonstrates how to use [Express](http://expressjs.com/) 4.x and
-[Passport](http://passportjs.org/) to authenticate users using Azure AD.
-Use this example as a starting point for your own web applications.
+[Passport](http://passportjs.org/) to authenticate users using Azure AD
+and then access the Microsoft Graph APIs.  
 
 ## Instructions
 
-To install this example on your computer, clone the repository and install
-dependencies.
+To install this example on your computer, clone the repository, install the
+dependencies, and build it.
 
 ```bash
 $ git clone https://github.com/johnshew/passport-express-4.x-azure-ad.git
@@ -14,7 +14,7 @@ $ npm install
 $ npm build
 ```
 
-Start the server.
+Then start the server.
 
 ```bash
 $ node dist/server.js
