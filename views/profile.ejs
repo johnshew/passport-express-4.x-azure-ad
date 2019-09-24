@@ -4,5 +4,9 @@ Name: <%= user.displayName %><br/>
 <% if (user.mail) { %>
 Email: <%= user.mail %><br/>
 <% } %>
+<% if (user.preferredLanguage) { %>
+Language: <%= user.preferredLanguage %><br/>
+<% } %>
+    
 </p>
 <a href="/logout">Log out</a>
