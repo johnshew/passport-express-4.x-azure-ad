@@ -24,9 +24,9 @@ const azureStrategyOptions: azure_ad.IOIDCStrategyOptionWithRequest = {
   responseMode: 'form_post',
   redirectUrl: baseUrl + redirectPath,
   allowHttpForRedirectUrl: true, // in production make false
-  validateIssuer: false, // in production make true
+  validateIssuer: true, // in production make true
   isB2C: false,
-  issuer: null,
+  issuer: process.env.ISSUER,
   passReqToCallback: true,
   scope: ['profile', 'offline_access', 'https://graph.microsoft.com/user.readwrite'], // remove offline_access for app only access
   loggingLevel: 'info',
@@ -48,9 +48,14 @@ async function processAzureStrategy(
   params: any,
   done: azure_ad.VerifyCallback) {
 
+  if (req.user) { 
+    return done(null, { ...req.user, oauthToken: params } ); 
+  }
+
   if (!profile.oid) {
     return done(new Error('No oid found'), null);
   }
+
   process.nextTick(async () => {
     return done(null, { ...profile, oauthToken: params }); // Done and include OauthToken in the profile.
   });
