@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
+assert(!process.env.APP_ID || !process.env.APP_SECRET, "Must have APP_ID and APP_SECRET defined");
 
 // Express with passport-azure-ad
 import * as express from 'express';
@@ -11,10 +12,11 @@ const ensureLoggedIn = connect_ensure_login.ensureLoggedIn();
 // Enable Microsoft Graph calls
 import fetch from 'node-fetch';
 import * as simple_oauth2 from 'simple-oauth2'; // for token refresh management
+import { assert } from 'console';
 
-const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
 const redirectPath = 'auth/openid/return';
-const port = process.env.PORT || '3000';
+const port = process.env.PORT || '8080';
+const baseUrl = process.env.BASE_URL || 'http://localhost:' + port;
 
 const azureStrategyOptions: azure_ad.IOIDCStrategyOptionWithRequest = {
   identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
@@ -24,9 +26,9 @@ const azureStrategyOptions: azure_ad.IOIDCStrategyOptionWithRequest = {
   responseMode: 'form_post',
   redirectUrl: baseUrl + redirectPath,
   allowHttpForRedirectUrl: process.env.ALLOW_HTTP === 'true', // in production should be false
-  validateIssuer: true,
+  validateIssuer: false,
   isB2C: false,
-  issuer: process.env.ISSUER,
+  // issuer: process.env.ISSUER,
   passReqToCallback: true,
   scope: ['profile', 'offline_access', 'https://graph.microsoft.com/user.read'], // remove offline_access for app only access
   loggingLevel: 'info',
