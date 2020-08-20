@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
+import { assert } from 'console';
 dotenv.config();
-assert(!process.env.APP_ID || !process.env.APP_SECRET, "Must have APP_ID and APP_SECRET defined");
+assert(process.env.APP_ID && process.env.APP_SECRET, "Must have APP_ID and APP_SECRET defined");
 
 // Express with passport-azure-ad
 import * as express from 'express';
@@ -12,7 +13,7 @@ const ensureLoggedIn = connect_ensure_login.ensureLoggedIn();
 // Enable Microsoft Graph calls
 import fetch from 'node-fetch';
 import * as simple_oauth2 from 'simple-oauth2'; // for token refresh management
-import { assert } from 'console';
+
 
 const redirectPath = 'auth/openid/return';
 const port = process.env.PORT || '8080';
@@ -118,7 +119,7 @@ app.set('views', require('path').join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 
 // Use application-level middleware for common functionality, including
-// logging, parsing, and session handling.
+// logging, parsing, and session handling.n
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('cookie-parser')()); // required by Azure-AD return parsing
